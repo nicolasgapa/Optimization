@@ -19,6 +19,8 @@ In order to use the algorithms, edit the inputs section at the beginning of the 
                     X1 + 2(X2) >= 3
                     X1, X2 >= 0
                     
+        ![alt text](http://url/to/img.png)
+                    
         First, convert to standard form:
         
         minimize    Z = 2(X1) + 3(X2)
