@@ -102,12 +102,15 @@ while not all(b[0] > 0):
     col_idxs = [i for i, y in enumerate(A[leaving] < 0) if y]
     negatives = A[leaving][col_idxs]
     
-    # Use the minimum ratio test to determine the element entering the basis.
-    d = abs(np.divide(z[0][col_idxs], negatives))
-    if len(d) == 0:
+    # If there are no negatives in the row, the problem is infeasible.
+    # Break.
+    if len(negatives) == 0:
         infeasible = True
         print('Infeasible solution.')
-        break    
+        break 
+    
+    # Use the minimum ratio test to determine the element entering the basis.
+    d = abs(np.divide(z[0][col_idxs], negatives))   
     entering = col_idxs[np.argmin(d)]
     
     # Update the basis.
