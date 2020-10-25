@@ -1,4 +1,4 @@
-# Optimization: Linear programming optimization techniques
+# Linear programming - Optimization techniques
 
 The primal and dual simplex algorithms are techniques to solve linear programming (optimization) problems. 
 These methods are also useful for sensitivity analysis. 
