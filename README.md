@@ -15,7 +15,7 @@ In order to use the algorithms, edit the inputs section at the beginning of the 
         For example, for the following minimization problem:
         
         minimize    Z = 2(X1) + 3(X2)
-        subject to  3(X1) + 2(X2) >= 4
+        subject to  3(X1) - 2(X2) >= 4
                     X1 + 2(X2) >= 3
                     X1, X2 >= 0
               
