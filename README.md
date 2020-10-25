@@ -7,12 +7,13 @@ These methods are also useful for sensitivity analysis.
 
 The primal method is used to reach optimality starting from a basic feasible solution, while the dual simplex method is used to reach feasibility starting with an infeasible solution. 
 
-In order to use the algorithms, edit the inputs section at the beginning of the code, where the following four variables have to be defined:
+In order to use the algorithms, first convert your problem to standard form. Then, edit the inputs section at the beginning of the code, where the following four variables have to be defined:
 
 1. z: The objective function coefficients.
-2. A: The constraints matrix (solving for the basic variables).
+2. A: The constraints matrix.
 3. b: Right hand side of the constraints.
 4. XB: The index of the starting basic variables (python-based index starting at 0).
+
     
         For example, for the following minimization problem:
         
