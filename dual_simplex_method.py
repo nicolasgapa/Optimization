@@ -11,10 +11,12 @@ import numpy as np
 from numpy import concatenate as ct
 
 # Inputs
-z = np.array([[2, 3, 0, 0]])
-A = np.array([[3, -2, -1, 0], [1, 2, 0, -1]])
-b = np.array([[4, 3]])
-XB = [2, 3]
+z = np.array([[2, 7, 6, 5, 0, 0, 0]])
+A = np.array([[-2, 3, 5, 4, 1, 0, 0], 
+              [7, 2, 6, -2, 0, 1, 0], 
+              [-4, -5, 3, 2, 0, 0, 1]])
+b = np.array([[-20, 35, -15]])
+XB = [4, 5, 6]
 
 # Function to update tableau using matrix operations.
 def update_tableau(tableau, basis):
@@ -55,7 +57,6 @@ def update_tableau(tableau, basis):
             # Divide the row by the intersection value.
             new_row = m/cur_intersection_value
         else:
-            
             # Perform row operations to update the current row.
             for row in rows:
                 e = [e for e, i in enumerate(m[local_basis]) if i != 0]
@@ -63,7 +64,7 @@ def update_tableau(tableau, basis):
                 new_row = m + c*row
                 
                 # Update until all basis column values are 0.
-                if all(new_row[basis] == 0):
+                if all(new_row[local_basis] == 0):
                     break
         
         # Append new row.
@@ -80,8 +81,17 @@ for i, xb in enumerate(XB):
         b[0][i] /= basis_element
 
 # Dual simplex method to find an optimal solution.
-count = 1
+count = 2
 z = np.array([list(z[0]) + [0]]) # Initialize solution to 0.
+
+# Print initial tableau.
+print('\n Tableau #1')
+full_tableau = ct((z, ct((A, np.transpose(b)), axis = 1)))
+print('Basis: ', XB)
+print(full_tableau)
+
+# Solve.
+infeasible = False
 while not all(b[0] > 0): 
     
     # Identify the element that leaves the basis.
@@ -94,6 +104,10 @@ while not all(b[0] > 0):
     
     # Use the minimum ratio test to determine the element entering the basis.
     d = abs(np.divide(z[0][col_idxs], negatives))
+    if len(d) == 0:
+        infeasible = True
+        print('Infeasible solution.')
+        break    
     entering = col_idxs[np.argmin(d)]
     
     # Update the basis.
@@ -110,19 +124,22 @@ while not all(b[0] > 0):
     
     # Print the new tableau.
     print('\n Tableau #', count)
+    print('Basis: ', XB)
     print(full_tableau)
     count += 1
     
 # Print solutions.
-print('\n Primal solution:')
-for e, i in enumerate(b[0], 1):
-    print('X%d = %f' % (e, i))
-print('z = ', -1*z[0][-1])
-    
-print('\n Dual solution:')
-ct = 1
-for e, i in enumerate(z[0][:-1], 0):
-    if e not in XB: 
-        print('Y%d = %f' % (ct, z[0][e]*-1))
-        ct += 1
-print('w = ', -1*z[0][-1])
+if not infeasible:
+    print('\n Primal solution:')
+    for e, i in enumerate(b[0], 1):
+        print('X%d = %f' % (e, i))
+    print('z = ', -1*z[0][-1])
+        
+    print('\n Dual solution:')
+    ct = 1
+    for e, i in enumerate(z[0][:-1], 0):
+        if e not in XB: 
+            print('Y%d = %f' % (ct, z[0][e]*-1))
+            ct += 1
+    print('w = ', -1*z[0][-1])
+
