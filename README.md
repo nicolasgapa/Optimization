@@ -22,7 +22,7 @@ In order to use the algorithms, edit the inputs section at the beginning of the 
         First, convert to standard form:
         
         minimize    Z = 2(X1) + 3(X2)
-        subject to  3(X1) + 2(X2) - e1 = 4
+        subject to  3(X1) - 2(X2) - e1 = 4
                     X1 + 2(X2) - e2 = 3
                     X1, X2, e1, e2 >= 0
          
