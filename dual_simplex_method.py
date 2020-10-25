@@ -11,7 +11,7 @@ import numpy as np
 from numpy import concatenate as ct
 
 # Inputs
-z = np.array([[2, 3, 0, 0, 0]])
+z = np.array([[2, 3, 0, 0]])
 A = np.array([[3, -2, -1, 0], [1, 2, 0, -1]])
 b = np.array([[4, 3]])
 XB = [2, 3]
@@ -81,6 +81,7 @@ for i, xb in enumerate(XB):
 
 # Dual simplex method to find an optimal solution.
 count = 1
+z = np.array([list(z[0]) + [0]]) # Initialize solution to 0.
 while not all(b[0] > 0): 
     
     # Identify the element that leaves the basis.
