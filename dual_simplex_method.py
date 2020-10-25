@@ -2,7 +2,6 @@
 """
 
 Embry-Riddle Aeronautical University
-MA305 - Scientific Computing
 @author: Nicolas Gachancipa
 
 Dual Simplex Optimization Method
