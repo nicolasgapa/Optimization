@@ -30,7 +30,7 @@ In order to use the algorithms, edit the inputs section at the beginning of the 
          z = np.array([[2, 3, 0, 0]])
          A = np.array([[3, -2, -1, 0], [1, 2, 0, -1]])
          b = np.array([[4, 3]])
-         XB = [2, 3]  (The second and third basic variables, e1 and e2, are th initial basis) 
+         XB = [2, 3]  (The initial basic variables are e1 and e2, which correspond to indexes 2 and 3)
          
       
          
