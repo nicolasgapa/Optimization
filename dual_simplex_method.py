@@ -1,0 +1,128 @@
+# -*- coding: utf-8 -*-
+"""
+
+Embry-Riddle Aeronautical University
+MA305 - Scientific Computing
+@author: Nicolas Gachancipa
+
+Dual Simplex Optimization Method
+"""
+# Imports
+import numpy as np
+from numpy import concatenate as ct
+
+# Inputs
+z = np.array([[2, 3, 0, 0, 0]])
+A = np.array([[3, -2, -1, 0], [1, 2, 0, -1]])
+b = np.array([[4, 3]])
+XB = [2, 3]
+
+# Function to update tableau using matrix operations.
+def update_tableau(tableau, basis):
+    
+    # Create new tableau.
+    new_tableau = []
+    
+    # Update each row (including z)
+    for row_idx in range(len(basis) + 1):
+        
+        # Make a copy of the arrays.
+        local_tableau = tableau[:]
+        local_basis = basis[:]
+        
+        # Extract the row to edit (call it m).
+        m = local_tableau[row_idx]
+        
+        # Remove that row form the tableau, and create a new array with 
+        # the rest of the rows.
+        rows = np.delete(local_tableau, row_idx, 0)
+        
+        # Obtain the intersection value for each basis element.
+        # Only for the basis rows (i.e. row_idx > 0). Row index of z is 0.
+        if row_idx > 0:
+            
+            # Obtain the value of the current row that must become one.
+            # This is the value at the intersection of the basis element
+            # rows and columns.
+            cur_intersection_value = m[local_basis[row_idx - 1]]
+        
+            # Delete the intersection value.
+            del local_basis[row_idx - 1]
+            
+        # If all basis column values in the current row are zero, and the 
+        # column is not the objective function column (z)
+        if all(m[local_basis] == 0) and row_idx > 0:
+            
+            # Divide the row by the intersection value.
+            new_row = m/cur_intersection_value
+        else:
+            
+            # Perform row operations to update the current row.
+            for row in rows:
+                e = [e for e, i in enumerate(m[local_basis]) if i != 0]
+                c = - m[local_basis][e]/row[local_basis][e]
+                new_row = m + c*row
+                
+                # Update until all basis column values are 0.
+                if all(new_row[basis] == 0):
+                    break
+        
+        # Append new row.
+        new_tableau.append(new_row)
+                
+    # Return the new matrix.
+    return np.array(new_tableau)
+        
+# Solve for the basis elements and update the A and b arrays.
+for i, xb in enumerate(XB):
+    basis_element = A[i][xb]
+    if basis_element != 1:
+        A[i] = A[i]/basis_element  
+        b[0][i] /= basis_element
+
+# Dual simplex method to find an optimal solution.
+count = 1
+while not all(b[0] > 0): 
+    
+    # Identify the element that leaves the basis.
+    leaving = [i for i, y in enumerate(b[0] < 0) if y][0]
+    
+    # For the row that corresponds to the element that is leaving the 
+    # basis, identify the elements that are negative.
+    col_idxs = [i for i, y in enumerate(A[leaving] < 0) if y]
+    negatives = A[leaving][col_idxs]
+    
+    # Use the minimum ratio test to determine the element entering the basis.
+    d = abs(np.divide(z[0][col_idxs], negatives))
+    entering = col_idxs[np.argmin(d)]
+    
+    # Update the basis.
+    XB[leaving] = entering 
+    
+    # Update the tableau.
+    full_tableau = ct((z, ct((A, np.transpose(b)), axis = 1)))
+    full_tableau = update_tableau(full_tableau, XB)
+    
+    # Extract the new vectors and matrices from the tableau.
+    z = np.expand_dims(full_tableau[0], 0)
+    A = full_tableau[1:, :-1]
+    b = np.transpose(full_tableau[1:, -1:])
+    
+    # Print the new tableau.
+    print('\n Tableau #', count)
+    print(full_tableau)
+    count += 1
+    
+# Print solutions.
+print('\n Primal solution:')
+for e, i in enumerate(b[0], 1):
+    print('X%d = %f' % (e, i))
+print('z = ', -1*z[0][-1])
+    
+print('\n Dual solution:')
+ct = 1
+for e, i in enumerate(z[0][:-1], 0):
+    if e not in XB: 
+        print('Y%d = %f' % (ct, z[0][e]*-1))
+        ct += 1
+print('w = ', -1*z[0][-1])
