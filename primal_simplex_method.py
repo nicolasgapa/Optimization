@@ -10,13 +10,16 @@ Primal Simplex Method.
 import numpy as np
 
 # Inputs
-z = np.array([3, -2, -4])
-A = np.array([[4,5, -2, 1, 0], [1, -2, 1, 0, 1]])
-b = np.array([[22, 30]])
-XB = [3, 4]
+z = np.array([-3, -13, -13, 0, 0, 0])
+A = np.array([[1, 1, 0, 1, 0, 0], 
+              [1, 3, 2, 0, 1, 0], 
+              [0, 2, 3, 0, 0, 1]])
+b = np.array([[7, 10, 9]])
+XB = [3, 4, 5]
 
 # Functions.
 def compute_c_hat_and_B(A, z, XN):
+    
     # Identify B, B^-1, N.
     B = A[:, np.r_[XB]]
     B_inv = np.linalg.inv(B)
@@ -32,37 +35,40 @@ def compute_c_hat_and_B(A, z, XN):
 # Code.
 XN = [i for i in range(len(A[0])) if i not in XB] 
 C_hat_NT, B, B_inv = compute_c_hat_and_B(A, z, XN)
+original_b = b[:]
 while any([x < 0 for x in C_hat_NT]):
     
     # Find the index of the column that will enter the basis.
     idx = [e for e, i in enumerate(C_hat_NT) if i < 0][0]
+    idx = XN[idx]
     
     # Compute Aj.
     Aj = np.dot(B_inv, np.array([[i] for i in A[:, idx]]))
-    if all(x < 0 for x in [i[0] for i in Aj]):
+    if all(x[0] <= 0 for x in Aj):
         break
     else:
         # Min-ratio test.
         minimum = 1e6
         for e, i in enumerate(Aj):
-            if i > 0:
+            if i[0] > 0:
                 min_ratio = b[0][e]/i[0]
                 if min_ratio < minimum:
-                    minimum = int(e)
-        leaving_base = minimum + len(XN)
+                    minimum = min_ratio
+                    min_index = int(e)
+        leaving_base = XB[min_index]
         
         # Update XB, XN, B, B_inv, and C_hat_NT
-        XB[XB.index(leaving_base)] = idx
+        XB[min_index] = idx
         XN[XN.index(idx)] = leaving_base
         C_hat_NT, B, B_inv = compute_c_hat_and_B(A, z, XN)
+        b = np.dot(B_inv, original_b.T).T
         
 # Print solution.
 if all([x >= 0 for x in C_hat_NT]):
     print('Optimal Solution Found:')
-    for e, i in zip(XB, np.linalg.solve(B, b.T)):
-        print("Variable X%d: %2f" %(e + 1, i[0]))
+    for e, i in zip(XB, b[0]):
+        print("Variable X%d: %2f" %(e + 1, i))
+    print('All other variables are zero.')
+    print('Plug these values into the objective function to get min/max.')
 else:
     print("Solution is unbounded.")
-        
-
-            
